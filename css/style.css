@@ -1,0 +1,220 @@
+/* Reset CSS */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* General */
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    padding: 20px;
+}
+
+/* Header Area */
+.header-area {
+    background: linear-gradient(135deg, #4CAF50, #2E7D32);
+    /* Fondo degradado en verde */
+    padding: 20px 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.header-area::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    /* Diseño con transparencia */
+    clip-path: polygon(0 0, 100% 15%, 100% 100%, 0 85%);
+    /* Forma decorativa */
+    z-index: 0;
+}
+
+.header-area .navbar,
+.header-area .cart {
+    position: relative;
+    z-index: 1;
+}
+
+/* Navbar */
+.navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.5rem 1rem;
+}
+
+/* Carrito de compras */
+.cart {
+    color: #f8f9fa !important;
+    /* Priorizar color blanco */
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+.cart p {
+    margin: 0;
+    font-size: 1rem;
+    color: #f8f9fa !important;
+    /* Texto del carrito */
+}
+
+.cart i {
+    font-size: 1.2rem;
+    margin-right: 5px;
+    color: #ffc107 !important;
+    /* Color del icono */
+}
+
+.cart sup {
+    font-size: 0.8rem;
+    color: #ffc107 !important;
+    /* Color de superíndice */
+}
+
+.cart:hover {
+    color: #ffc107 !important;
+    /* Efecto hover en el carrito */
+}
+
+.cart:hover i {
+    color: #ff9800 !important;
+    /* Color del icono en hover */
+}
+
+/* Ajuste en pantallas pequeñas */
+@media (max-width: 768px) {
+    .cart {
+        margin-left: 10px;
+        /* Reducción de margen en pantallas pequeñas */
+    }
+}
+
+/* Main Banner */
+.main-banner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 500px;
+    /* Altura del banner */
+    background-image: url('img/banner-image.jpg');
+    background-size: cover;
+    background-color: #e9ecef;
+    color: white;
+    position: relative;
+}
+
+.main-banner .container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.main-banner .caption {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    padding: 20px;
+    text-align: left;
+}
+
+/* Carousel */
+.carousel {
+    max-width: 400px;
+    margin-left: 20px;
+}
+
+.carousel-item img {
+    width: 100%;
+    height: auto;
+}
+
+/* Tipografía y color de encabezados */
+h6 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffc107;
+    /* Color destacado */
+}
+
+h2 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #343a40;
+    /* Color principal para encabezados */
+}
+
+/* Estilos de texto y párrafos */
+p {
+    color: #495057;
+    /* Color de texto general */
+}
+
+/* Sección Newsletter */
+.newsletter {
+    background-color: #f1f1f1;
+    padding: 50px 0;
+}
+
+/* Encabezado de sección */
+.section-heading {
+    margin-bottom: 40px;
+}
+
+/* Footer */
+footer {
+    background-color: #343a40;
+    padding: 40px 0;
+    color: #ffffff;
+    width: 100%;
+}
+
+footer h5 {
+    font-weight: 700;
+    margin-bottom: 20px;
+    font-size: 18px;
+    text-transform: uppercase;
+}
+
+footer a {
+    color: #ffffff;
+    text-decoration: none;
+    transition: color 0.3s, transform 0.3s;
+    /* Transición suave para hover */
+}
+
+footer a:hover {
+    color: #ff9800;
+    transform: scale(1.1);
+}
+
+footer .social a:hover {
+    color: #ff9800;
+    transform: scale(1.2);
+}
+
+/* Estilo personalizado para el logotipo */
+.navbar-brand img {
+    height: 50px;
+    /* Ajuste de tamaño del logotipo */
+    width: auto;
+}
+
+/* Ajuste de margen para centrar verticalmente el contenido */
+.navbar .navbar-brand {
+    padding: 0.5rem 1rem;
+}
