@@ -1,124 +1,85 @@
 <?php
-session_start();
-$errores = array();
-require_once "validacion.php";
+require_once "conexion_pdo.php";
+require_once "config/config.php";
+require_once "clases/funciones_cliente.php";
+$dbConnection = new ConectaBD();
+$pdo = $dbConnection->getConBD();
+
+// Determinar si el proceso es 'pago' o 'login', dependiendo de la URL.
+$proceso = isset($_GET['pago']) ? 'pago' : 'login';
+
+$errores = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $user = trim(htmlspecialchars($_POST['user']));
-    $pass = trim(htmlspecialchars($_POST['pass']));
+    // Recoger los datos del formulario
+    $usuario = trim(htmlspecialchars($_POST['usuario']));
+    $password = trim(htmlspecialchars($_POST['password']));
+    $proceso = $_POST['proceso'] ?? 'login';
 
-    // Validación del usuario
-    if (empty($user)) {
-        $errores[] = "El campo de usuario está vacío.";
-    } elseif (!validarUsuario($user)) {
-        $errores[] = "Nombre de usuario no es válido. Debe tener entre 3 y 10 caracteres, y solo contener números y letras.";
+    // Verificar que los datos no son nulos o vacíos
+    if (esNulo([$usuario, $password])) {
+        $errores[] = "Llena todos los campos.";
     }
-
-    // Validación de la contraseña
-    if (empty($pass)) {
-        $errores[] = "El campo de contraseña está vacío.";
-    } elseif (strlen($pass) !== 5) { // Asegúrate de que la longitud de la contraseña sea la correcta
-        $errores[] = "La contraseña debe tener 5 caracteres.";
-    }
-
+    // Si no hay errores previos, proceder con el proceso de login.
     if (empty($errores)) {
-        require_once("config.php");
-        try {
-            $pdo = new PDO("mysql:host=" . BBDD_HOST . ";dbname=" . BBDD_NAME, BBDD_USER, BBDD_PASSWORD);
-            $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-            $query = "SELECT u.id_usuario, u.nombre, u.email, u.contrasena, u.id_rol, r.descripcion 
-                      FROM usuarios u
-                      JOIN roles r ON u.id_rol = r.id_rol
-                      WHERE u.nombre = :user";
-            $stmt = $pdo->prepare($query);
-            $stmt->bindParam(':user', $user);
-            $stmt->execute();
-
-            if ($stmt->rowCount() > 0) {
-                $fila = $stmt->fetch(PDO::FETCH_ASSOC);
-                if (password_verify($pass, $fila['contrasena'])) {
-                    $_SESSION['id_usuario'] = $fila["id_usuario"];
-                    $_SESSION['nombre'] =  $fila["nombre"];
-                    $_SESSION['id_rol'] = $fila['id_rol'];
-                    $_SESSION['descripcion'] = $fila['descripcion'];
-
-                    // Registro de log
-                    registrar_log($fila['id_usuario'], "Inicio de sesión exitoso.", "El usuario " . $fila['nombre'] . " ha iniciado sesión correctamente.");
-                    header("Location: index.php");
-                    exit;
-                } else {
-                    $errores[] = "Usuario o contraseña inválidos. Vuelva a intentarlo.";
-                }
-            } else {
-                $errores[] = "Usuario o contraseña inválidos. Vuelva a intentarlo.";
-            }
-        } catch (PDOException $e) {
-            printf("Conexión fallida: %s\n", $e->getMessage());
-            exit();
-        }
+        $errores[] = login($usuario, $password, $pdo, $proceso);
     }
 }
 ?>
 
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Inicio de Sesión</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="author" content="Ariel_Caicedo">
+    <title>Tienda de juegos</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
-    <style>
-        .login-container {
-            max-width: 400px;
-            padding: 20px;
-            background-color: #f7f7f7;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .error {
-            list-style-type: none;
-            padding: 0;
-        }
-        .error li {
-            color: red;
-        }
-    </style>
 </head>
-<body class="login-page">
-    <div class="container d-flex justify-content-center align-items-center min-vh-100">
-        <div class="login-container">
-            <h1 class="text-center">Iniciar Sesión</h1>
-            <form action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post">
-                <div class="form-group">
-                    <label for="user">Usuario</label>
-                    <input type="text" class="form-control" name="user" id="user" required>
+
+<body>
+    <!-- Header Area Start -->
+
+    <!--Contenido-->
+    <main class="form-login m-auto pt-4">
+        <div class="container">
+            <div class="container d-flex justify-content-center align-items-center min-vh-100">
+                <div class="login-container">
+                    <h2 class="text-center mb-4">Iniciar Sesión</h2>
+                    <?php mostrarMensajes($errores) ?>
+                    <form class="row g-3" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>" method="post" autocomplete="off">
+                        <input type="hidden" name="proceso" value="<?php echo $proceso; ?>">
+                        <div class="form-floating">
+                            <input type="text" class="form-control" name="usuario" id="usuario" placeholder="Usuario" require>
+                            <label for="usuario">Usuario</label>
+                        </div>
+                        <div class="form-floating">
+                            <input type="password" class="form-control" name="password" id="password" placeholder="Contraseña" require>
+                            <label for="contraseña">Contraseña</label>
+                        </div>
+                        <div class="col-12">
+                            <a href="recupera_clave.php">¿Olvidaste tu contraseña?</a>
+                        </div>
+                        <div class="d-grid gap-3 col-12">
+                            <button type="submit" class="btn btn-primary">Inicia sesion</button>
+                        </div>
+                        <hr>
+                        <div class="col-12">
+                            ¿No tienes una cuenta? <a href="registrarse.php">Regístrate aquí</a>
+                        </div>
+                    </form>
                 </div>
-                <div class="form-group">
-                    <label for="pass">Contraseña</label>
-                    <input type="password" class="form-control" name="pass" id="pass" required>
-                </div>
-                <div class="text-center">
-                    <input type="submit" class="btn btn-primary btn-block" value="Iniciar Sesión">
-                </div>
-            </form>
-            <div class="text-center mt-3">
-                <p>¿No tienes una cuenta? <a href="registro/registrarse.php">Regístrate aquí</a></p>
             </div>
-            <ul class="error mt-3">
-                <?php
-                if (!empty($errores)) {
-                    foreach ($errores as $error) {
-                        echo "<li class='text-danger'>$error</li>";
-                    }
-                }
-                ?>
-            </ul>
         </div>
-    </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
+
 </body>
+
 </html>
