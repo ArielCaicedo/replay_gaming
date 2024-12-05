@@ -1,78 +1,34 @@
-/* Reset CSS */
+/* =======================================
+   RESET CSS
+   ======================================= */
+/* Elimina los márgenes y rellenos por defecto, y ajusta el modelo de caja */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* General */
+/* =======================================
+   ESTILOS GENERALES
+   ======================================= */
 body {
     font-family: Arial, sans-serif;
-    background-color: #222220;
+    background-color: #000000;
     color: white;
     line-height: 1.6;
-}
-
-/* Header Area */
-.header-area::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.1);
-    clip-path: polygon(0 0, 100% 15%, 100% 100%, 0 85%);
-    z-index: 0;
-}
-
-.header-area .navbar {
-    position: relative;
-    z-index: 1;
-}
-
-.navbar {
-    padding: 0.5rem 1rem;
-}
-
-.navbar-brand img {
-    height: 50px;
-    width: auto;
-}
-
-/* Carrito de compras */
-.cart {
-    color: #f8f9fa !important;
-    margin-left: auto;
+    padding-top: 65px;
+    /* Ajuste del espacio superior para el navbar */
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    /* Asegura que el body ocupe toda la altura de la ventana */
 }
 
-.cart i {
-    font-size: 1.2rem;
-    margin-right: 5px;
-    color: #ffc107 !important;
+main {
+    flex: 1;
+    /* Empuja el footer al final */
 }
 
-.cart:hover i {
-    color: #ff9800 !important;
-}
-
-/* Responsivo */
-@media (max-width: 768px) {
-    .cart {
-        margin-left: 10px;
-    }
-}
-
-/* Carousel */
-.carousel-item img {
-    width: 100%;
-    height: auto;
-    object-fit: cover;
-}
-
-/* Tipografía */
 h6 {
     font-size: 1.2rem;
     font-weight: 600;
@@ -82,39 +38,103 @@ h6 {
 h2 {
     font-size: 2.5rem;
     font-weight: 700;
-    color: #343a40;
 }
 
-p {
+#ref {
     color: #495057;
 }
 
-/* Footer */
-footer {
-    background-color: #343a40;
-    padding: 40px 0;
-    color: #ffffff;
-    width: 100%;
-}
+/* =======================================
+   HEADER - NAVBAR
+   ======================================= */
 
-footer a {
-    color: #ffffff;
-    text-decoration: none;
-    transition: color 0.3s, transform 0.3s;
-}
-
-footer a:hover {
-    color: #ff9800;
-    transform: scale(1.1);
-}
-
-/* Estilo del logotipo */
+/* Estilos del navbar */
 .navbar-brand img {
     max-height: 50px;
     width: auto;
 }
 
-/* Sección Newsletter */
+/* Barra de navegación con fondo negro inicial */
+.navbar-custom {
+    background-color: black;
+    /* Fondo negro por defecto */
+    transition: background-color 0.3s ease;
+    /* Transición suave */
+}
+
+/* Fondo del navbar cuando se hace scroll */
+.navbar-custom.scrolled {
+    background-color: rgba(52, 58, 64, 0.7);
+    /* Fondo gris oscuro con transparencia (70%) */
+}
+
+/* Estilos para el carrito de compras */
+.cart {
+    color: #f8f9fa !important;
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+}
+
+/* Icono del carrito */
+.cart i {
+    font-size: 1.5rem;
+    /* Tamaño más grande para el icono */
+    margin-right: 5px;
+    color: #ffc107 !important;
+    /* Color dorado para resaltar el icono */
+}
+
+/* Hover sobre el carrito */
+.cart:hover i {
+    color: #ff9800 !important;
+    /* Color dorado al pasar el mouse */
+}
+
+/* Estilo del icono del usuario */
+#btn_session i {
+    color: white;
+}
+
+#btn_session:hover i,
+#btn_session:hover {
+    color: white;
+    /* Mantiene el color del icono y el texto al pasar el mouse */
+}
+
+/* Ajustes adicionales para un buen contraste */
+.navbar-light .navbar-nav .nav-link {
+    color: #f8f9fa;
+    /* Color blanco para los enlaces */
+}
+
+.navbar-light .navbar-nav .nav-link:hover {
+    color: #ffc107;
+    /* Dorado al pasar el mouse */
+}
+
+/* =======================================
+   BOTONES
+   ======================================= */
+.color {
+    background-color: #FF6600;
+    /* Fondo naranja */
+    color: white;
+    /* Texto blanco */
+    font-weight: bold;
+    /* Texto en negrita */
+    transition: background-color 0.3s ease;
+    /* Transición suave */
+}
+
+.color:hover {
+    background-color: #e65c00;
+    /* Fondo más oscuro al pasar el ratón */
+}
+
+/* =======================================
+   SECCIÓN NEWSLETTER
+   ======================================= */
 .newsletter {
     background-color: #f1f1f1;
     padding: 50px 0;
@@ -124,78 +144,170 @@ footer a:hover {
     margin-bottom: 40px;
 }
 
-/* Main Banner */
-.main-banner {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    height: 500px;
-    background-image: url('img/banner-image.jpg');
-    background-size: cover;
+/* =======================================
+   ICONOS DE REDES SOCIALES
+   ======================================= */
+.social a {
+    font-size: 1.5rem;
     color: white;
-    position: relative;
+    text-decoration: none;
+    transition: transform 0.3s ease, color 0.3s ease;
 }
 
-.main-banner .caption {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px;
-    text-align: left;
+/* Efecto hover para todos los iconos */
+.social a:hover,
+.social .fab:hover {
+    opacity: 0.8;
+    transform: scale(1.2);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    color: #f39c12;
+    /* Color base de hover para redes sociales */
 }
 
-/* Carousel */
-.carousel-item img {
-    width: 90%;
-    height: auto;
-}
-.carousel-item img {
-    width: 800px;
-    height: 400px; /* Ajustar la altura de la imagen */
-    object-fit: cover;
+/* Estilos personalizados para cada red social */
+.social .fab.fa-instagram {
+    color: #E4405F;
 }
 
-.thumb img {
-    width: 100%; /* Se ajusta al contenedor */
-    max-width: 300px; /* Tamaño máximo */
-    height: auto;
+.social .fab.fa-linkedin-in {
+    color: #0077b5;
 }
 
-/* Icono del usuario */
-#btn_session i {
-    color: white; /* Asegura que el icono sea visible */
+.social .fab.fa-x-twitter {
+    color: #1DA1F2;
 }
 
-#btn_session:hover i {
-    color: white; /* Mantiene el color del icono al pasar el mouse */
+.social .fab.fa-discord {
+    color: #7289DA;
 }
 
-#btn_session {
-    color: white; /* Asegura que el texto del botón sea visible */
+/* Efectos hover personalizados */
+.social .fab.fa-instagram:hover {
+    color: #f5a1c0;
 }
 
-#btn_session:hover {
-    color: white; /* Mantiene el color del texto del botón al pasar el mouse */
+.social .fab.fa-linkedin-in:hover {
+    color: #00A0DC;
 }
+
+.social .fab.fa-x-twitter:hover {
+    color: #00A9E0;
+}
+
+.social .fab.fa-discord:hover {
+    color: #99AAB5;
+}
+
+/* =======================================
+   FOOTER
+   ======================================= */
+/* Footer personalizado */
+.footer-custom {
+    background-color: #000;
+    /* Fondo oscuro */
+    color: #f8f9fa;
+    /* Texto claro */
+    flex-shrink: 0;
+    /* Evitar que se estire */
+    padding: 20px 0;
+    /* Reducir el padding arriba y abajo para que el espacio sea menor */
+}
+
+/* Línea divisoria */
+.footer-custom hr {
+    margin-top: 0;
+    /* Eliminar el margen superior */
+    margin-bottom: 0;
+    /* Eliminar el margen inferior */
+    border-color: rgba(255, 255, 255, 0.2);
+}
+
+/* Espaciado de íconos sociales */
+.footer-custom .social a {
+    margin-right: 10px;
+    /* Espaciado entre íconos */
+    transition: transform 0.3s, color 0.3s;
+}
+
+.footer-custom .social a:hover {
+    color: #ff9800;
+    transform: scale(1.1);
+}
+
+/* Ajuste del contenido principal */
+html,
 body {
-    padding-top: 60px; /* Ajusta este valor según la altura del navbar */
+    height: 100%;
+    /* Asegurar que la altura de la página ocupe toda la pantalla */
+    margin: 0;
+    /* Eliminar margenes predeterminados */
 }
 
-/* Opcional: Ajustes para un diseño más elegante */
-.navbar-brand img {
-    height: 40px;
-    width: auto;
+body {
+    display: flex;
+    flex-direction: column;
+    /* Layout en columna */
 }
 
-.navbar-nav .nav-link {
-    font-size: 0.9rem;
-    padding: 0.5rem 1rem;
+main {
+    flex-grow: 1;
+    /* Asegura que el contenido principal ocupe el espacio restante */
+    margin-bottom: 0;
+    /* Evitar relleno adicional */
 }
 
-/* FOOTER */
-html, body {
-    height: 100%; /* Asegura que el body ocupe toda la altura de la ventana */
+/* Solución para asegurar el footer siempre en el fondo */
+footer {
+    position: relative;
+    bottom: 0;
+    width: 100%;
+}
+
+.flex-grow-1 {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+footer {
+    margin-top: auto;
+}
+
+/* =======================================
+   FORMULARIOS Y ENTRADAS
+   ======================================= */
+.form-login {
+    max-width: 350px;
+}
+
+/* =======================================
+   ESTILOS DE IMÁGENES Y VÍDEOS
+   ======================================= */
+.thumb {
+    position: relative;
+    height: auto;
+}
+
+.item .thumb img {
+    width: 100%;
+    max-width: 250px;
+    height: auto;
+    max-height: 200px;
+    /* Limitar la altura */
+    object-fit: cover;
+    /* Asegurar recorte sin deformación */
+    border-radius: 8px;
+    /* Mantener bordes redondeados */
+    object-position: center;
+}
+
+
+/* =======================================
+   ESTILOS ADICIONALES
+   ======================================= */
+html,
+body {
+    height: 100%;
 }
 
 body {
@@ -204,23 +316,418 @@ body {
 }
 
 main {
-    flex: 1; /* Empuja el footer al final */
+    flex: 1;
 }
 
-/* Ajustes para el footer */
 footer {
-    background-color: #343a40; /* Fondo oscuro */
-    color: #ffffff; /* Texto blanco */
-    text-align: left; /* Alineación izquierda por defecto */
-}
-
-footer a {
     color: #ffffff;
+    text-align: left;
+}
+
+/* Estilo de los iconos en la sección de redes sociales */
+.social a {
+    font-size: 1.5rem;
+    color: white;
     text-decoration: none;
-    transition: color 0.3s ease-in-out;
+    transition: transform 0.3s ease, color 0.3s ease;
 }
 
-footer a:hover {
-    color: #ff9800; /* Cambio de color en hover */
+/* Efecto hover para los iconos */
+.social a:hover {
+    opacity: 0.8;
+    transform: scale(1.2);
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+    color: #f39c12;
 }
 
+.social .fab.fa-instagram {
+    color: #E4405F;
+}
+
+.social .fab.fa-linkedin-in {
+    color: #0077b5;
+}
+
+.social .fab.fa-x-twitter {
+    color: #1DA1F2;
+}
+
+.social .fab.fa-discord {
+    color: #7289DA;
+}
+
+.social .fab.fa-instagram:hover {
+    color: #f5a1c0;
+}
+
+.social .fab.fa-linkedin-in:hover {
+    color: #00A0DC;
+}
+
+.social .fab.fa-x-twitter:hover {
+    color: #00A9E0;
+}
+
+.social .fab.fa-discord:hover {
+    color: #99AAB5;
+}
+
+/* =======================================
+   ESTILOS CATEGORIAS
+   ======================================= */
+
+.card:hover {
+    transform: scale(1.05);
+    /* Aumenta el tamaño ligeramente */
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Sombra más intensa */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card .card-img-top {
+    transition: transform 0.3s ease;
+    /* Suaviza la animación */
+}
+
+.card:hover .card-img-top {
+    transform: scale(1.1);
+    /* Zoom en la imagen */
+}
+
+.card-title {
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.card:hover .card-title {
+    background-color: #ffc107;
+    /* Cambia a amarillo */
+    color: #212529;
+    /* Cambia el texto a oscuro */
+}
+
+.card a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: #ffc107;
+    transition: width 0.3s ease;
+}
+
+.card:hover a {
+    color: #fff;
+    /* Cambia el color del texto */
+}
+
+.card a:active {
+    transform: scale(0.95);
+    /* Reduce ligeramente el tamaño */
+    transition: transform 0.1s ease;
+}
+
+.card:hover {
+    cursor: pointer;
+}
+
+/* =======================================
+   ESTILOS MAS JUGADOS
+   ======================================= */
+
+.item:hover {
+    transform: scale(1.05);
+    /* Efecto de aumento */
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+    /* Sombra más intensa */
+}
+
+.thumb img {
+    transition: transform 0.3s ease;
+    /* Suaviza la animación */
+}
+
+.item:hover .thumb img {
+    transform: scale(1.1);
+    /* Zoom en la imagen */
+}
+
+.down-content h4 {
+    transition: color 0.3s ease;
+}
+
+.item:hover .down-content h4 {
+    color: #ffc107;
+    /* Cambia el color del texto */
+}
+
+.down-content a {
+    position: relative;
+    transition: color 0.3s ease;
+}
+
+.down-content a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: #ffc107;
+    transition: width 0.3s ease;
+}
+
+.item:hover .down-content a {
+    color: #fff;
+    /* Cambia el color del texto */
+}
+
+.item:hover .down-content a::after {
+    width: 100%;
+    /* Línea subrayada se despliega */
+}
+
+/* =======================================
+   ESTILOS FORM DE BUSQUEDA.
+   ======================================= */
+/* Color del botón de limpiar cuando esté visible */
+/* Estilo base del botón Limpiar */
+#btnLimpiar {
+    background-color: #6c757d;
+    /* Gris oscuro elegante */
+    color: #ffffff;
+    /* Texto blanco */
+    border: none;
+    /* Sin bordes */
+    border-radius: 25px;
+    /* Botón redondeado */
+    padding: 0.5rem 1rem;
+    /* Espaciado interno */
+    font-size: 0.9rem;
+    /* Tamaño de texto legible */
+    text-align: center;
+    transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+    /* Transiciones suaves */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    /* Sombra sutil para profundidad */
+}
+
+/* Estilo al pasar el mouse */
+#btnLimpiar:hover {
+    background-color: #dc3545;
+    /* Rojo vibrante (Bootstrap Danger) */
+    color: #ffffff;
+    /* Texto siempre blanco */
+    transform: scale(1.05);
+    /* Ligeramente más grande */
+}
+
+/* Estilo al presionar el botón */
+#btnLimpiar:active {
+    background-color: #a71d2a;
+    /* Rojo más oscuro */
+    color: #ffffff;
+    /* Texto blanco */
+    transform: scale(0.95);
+    /* Ligeramente más pequeño */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    /* Reducir la sombra */
+}
+
+
+/* Contenedor para la animación */
+.search-wrapper {
+    overflow: hidden;
+    transition: all 0.4s ease;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    position: relative;
+}
+
+/* Campo de búsqueda animado */
+.search-input {
+    width: 100%;
+    /* Ancho inicial */
+    padding-right: 50px;
+    /* Espacio para el botón */
+    border: 2px solid transparent;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(255, 193, 7, 0.4);
+    transition: all 0.4s ease;
+    background-color: #f8f9fa;
+}
+
+/* Botón animado */
+.search-btn {
+    background: #ffc107;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 0 5px 5px 0;
+    transition: all 0.3s ease;
+}
+
+/* Efecto al pasar el mouse sobre el botón */
+.search-btn:hover {
+    background: #e0a800;
+    transform: scale(1.1);
+}
+
+/* Efecto cuando se enfoca el campo */
+.search-input:focus {
+    background-color: #fff;
+    border-color: #ffc107;
+    box-shadow: 0 0 12px rgba(255, 193, 7, 0.7);
+}
+
+/* Efecto de expansión en hover */
+.search-wrapper:hover {
+    box-shadow: 0 0 15px rgba(255, 193, 7, 0.6);
+}
+
+/* Icono de búsqueda */
+.search-btn i {
+    font-size: 1.2rem;
+    transition: transform 0.3s ease;
+}
+
+/* Animación del ícono al pasar el mouse */
+.search-btn:hover i {
+    transform: scale(1.2);
+}
+
+/* Palpitación de la caja */
+@keyframes pulse {
+    0% {
+        box-shadow: 0 0 8px rgba(255, 193, 7, 0.4);
+    }
+
+    50% {
+        box-shadow: 0 0 12px rgba(255, 193, 7, 0.6);
+    }
+
+    100% {
+        box-shadow: 0 0 8px rgba(255, 193, 7, 0.4);
+    }
+}
+
+.search-wrapper {
+    animation: pulse 1.5s infinite;
+}
+
+/* Responsividad */
+@media (max-width: 576px) {
+    .search-wrapper {
+        box-shadow: none;
+        /* Menos distracción en pantallas pequeñas */
+        animation: none;
+        /* Sin animación */
+    }
+
+    .search-input {
+        padding-right: 40px;
+        /* Ajuste para pantallas pequeñas */
+    }
+
+    .search-btn i {
+        font-size: 1rem;
+    }
+}
+
+/* =======================================
+   ESTILOS DEL SPINNER.
+   ======================================= */
+
+.spinner-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 4px solid transparent;
+    border-top: 4px solid #ffffff;
+    border-right: 4px solid #2a82bf;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.5);
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* =======================================
+   ESTILOS DE LA ANIMACION DEL CARRITO.
+   ======================================= */
+
+
+/* Animación mejorada: vibración, escalado y cambio de color */
+@keyframes vibrar {
+    0% {
+        transform: translateX(0) scale(1);
+        background-color: transparent;
+    }
+
+    25% {
+        transform: translateX(-5px) scale(1.1);
+        background-color: rgba(255, 193, 7, 0.2);
+    }
+
+    50% {
+        transform: translateX(5px) scale(1.1);
+        background-color: rgba(255, 193, 7, 0.4);
+    }
+
+    75% {
+        transform: translateX(-5px) scale(1.1);
+        background-color: rgba(255, 193, 7, 0.2);
+    }
+
+    100% {
+        transform: translateX(0) scale(1);
+        background-color: transparent;
+    }
+}
+
+.vibrar {
+    animation: vibrar 0.8s ease-in-out;
+    /* Aumenta la duración para un efecto más visible */
+    border-radius: 50%;
+    /* Asegura una transición fluida alrededor del ícono */
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+/* =======================================
+   ESTILOS DE LA DESCRIPCION DEL PRODUCTO.
+   ======================================= */
+
+
+/* Justificar texto para la descripción del producto */
+.descripcion-producto {
+    text-align: justify;
+    line-height: 1.6;
+    /* Ajusta la altura de línea para mejor legibilidad */
+    margin-top: 15px;
+    /* Espaciado superior para separar del título */
+    color: white;
+    /* Asegúrate de que el texto sea legible */
+    font-size: 16px;
+    /* Tamaño de fuente consistente */
+}

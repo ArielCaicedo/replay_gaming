@@ -1,41 +1,37 @@
-<header>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top py-2">
+<header class="header-area">
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top py-2 navbar-custom">
         <div class="container-fluid">
-            <!-- Logotipo más pequeño -->
+            <!-- Logotipo -->
             <a href="index.php" class="navbar-brand">
-                <img src="img/logotipo.png" alt="Replaygaming" class="img-fluid">
+                <img src="img/logotipo/logotipo.png" alt="Replaygaming" class="img-fluid" id="site-logo">
             </a>
-            <!-- Botón hamburguesa -->
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
+
             <!-- Menú de navegación centrado -->
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto mb-2 mb-lg-0"> <!-- Centrado con mx-auto -->
-                    <li class="nav-item">
+                    <li class="nav-item d-none d-lg-block">
                         <a class="nav-link active" href="index.php">Inicio</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="shop.html">Nuestra tienda</a>
+                    <li class="nav-item d-none d-lg-block">
+                        <a class="nav-link" href="busqueda.php">Catálogo</a>
                     </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="product-details.html">Detalles del producto</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="contact.html">Contáctanos</a>
+                    <li class="nav-item d-none d-lg-block">
+                        <a class="nav-link" href="contacto.php">Contáctanos</a>
                     </li>
                 </ul>
             </div>
-            <!-- Iconos y botones -->
+
+            <!-- Contenedor de iconos y botones -->
             <div class="d-flex align-items-center">
-                <a href="checkout.php" class="btn btn-primary btn-sm me-2">
+                <!-- Carrito de compras con la clase "cart" -->
+                <a href="checkout.php" class="btn btn-sm me-2 cart">
                     <i class="fas fa-shopping-cart"></i>
-                    <span id="num_cart" class="badge bg-secondary"><?php echo $num_cart; ?></span>
+                    <span id="num_cart" class="badge bg-danger"><?php echo $num_cart; ?></span>
                 </a>
+
                 <?php if (isset($_SESSION['id_usuario'])) { ?>
                     <div class="dropdown">
-                        <button class="btn btn-success btn-sm dropdown-toggle" type="button" id="btn_session" data-bs-toggle="dropdown" aria-expanded="false">
+                        <button class="btn btn-sm dropdown-toggle text-success" type="button" id="btn_session" data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="fa-solid fa-user"></i> &nbsp; <?php echo $_SESSION['usuario']; ?>
                         </button>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="btn_session">

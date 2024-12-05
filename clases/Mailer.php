@@ -23,8 +23,11 @@ class Mailer
             $mail->SMTPSecure = PHPMailer::ENCRYPTION_SMTPS;        // Habilitar encriptación TLS
             $mail->Port       = MAIL_PORT;                          // Puerto TCP para conexión TLS
 
+            // Establecer la codificación UTF-8
+            $mail->CharSet = 'UTF-8'; 
+
             // Remitente y destinatario
-            $mail->setFrom(MAIL_USERNAME, 'TIENDA JP');
+            $mail->setFrom(MAIL_USERNAME, 'TIENDA RP G');
             $mail->addAddress($email); // Correo y nombre del destinatario
 
             // Contenido del correo

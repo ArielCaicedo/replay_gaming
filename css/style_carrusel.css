@@ -1,0 +1,85 @@
+/* BODY - Padding para el header */
+body {
+    padding-top: 70px;
+    /* Altura ajustada del header */
+    padding-bottom: 3rem;
+    color: rgb(var(--bs-tertiary-color-rgb));
+}
+/* =======================================
+   CARRUSEL
+   ======================================= */
+.carousel-container {
+
+    height: 80vh;
+    /* Ajusta la altura del carrusel a un 80% de la ventana */
+    position: relative;
+}
+
+/* Ajustes de las imágenes en el carrusel */
+.carousel-item img {
+    object-fit: cover;
+    /* Ajusta la imagen para cubrir todo el espacio disponible sin deformarse */
+}
+
+/* Captions dentro del carrusel */
+.carousel-caption {
+    bottom: 3rem;
+    z-index: 10;
+}
+
+/* Ajuste en pantallas pequeñas */
+@media (max-width: 576px) {
+    .carousel-caption {
+        bottom: 5rem;
+        /* Ajusta para evitar conflictos en móviles */
+    }
+}
+
+/* Texto sobre el carrusel */
+.text-container {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    z-index: 2;
+    padding: 10px;
+}
+
+/* Estilo del título y subtítulo del texto */
+.text-container h6 {
+    font-size: 1rem;
+}
+
+.text-container h2 {
+    font-size: 2.2rem;
+}
+
+.text-container p {
+    font-size: 1rem;
+}
+
+/* Aseguramos que el diseño sea responsivo */
+@media (max-width: 768px) {
+    .carousel-container {
+        height: 70vh;
+        /* Reduce la altura en pantallas más pequeñas */
+    }
+}
+
+/* Ajustes adicionales para marketing y featurettes */
+@media (min-width: 40em) {
+    .carousel-caption p {
+        margin-bottom: 1.25rem;
+        font-size: 1.25rem;
+        line-height: 1.4;
+    }
+
+    .featurette-heading {
+        font-size: 50px;
+    }
+}
+
+@media (min-width: 62em) {
+    .featurette-heading {
+        margin-top: 7rem;
+    }
+}

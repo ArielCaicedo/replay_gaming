@@ -20,7 +20,7 @@ try {
     $mail->Port       = MAIL_PORT;                       // Puerto TCP para conexión TLS
 
     // Remitente y destinatario
-    $mail->setFrom(MAIL_USERNAME, 'TIENDA JP');
+    $mail->setFrom(MAIL_USERNAME, 'TIENDA RP G');
     $mail->addAddress('fabricioar_1991@outlook.com', 'Fabricio'); // Correo y nombre del destinatario
     $mail->addReplyTo('fabricioar_1991@outlook.com');
 

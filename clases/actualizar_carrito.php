@@ -1,7 +1,7 @@
 <?php
 // Cargar la configuración y la conexión a la base de datos.
 require_once "../config/config.php";
-require_once "../conexion_pdo.php";
+require_once "../config/conexion_pdo.php";
 
 // Verificar si se ha enviado una acción desde el formulario o petición.
 if (isset($_POST['action'])) {// Capturar la acción a realizar (agregar o eliminar).

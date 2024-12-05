@@ -1,5 +1,5 @@
 <?php
-require_once "conexion_pdo.php";
+require_once "config/conexion_pdo.php";
 require_once "config/config.php";
 require_once "clases/funciones_cliente.php";
 
@@ -17,4 +17,13 @@ $dbConnection = new ConectaBD();
 $pdo = $dbConnection->getConBD();
 
 // Llama a la función 'validaToken'
-validaToken($id, $token,$pdo);
+// Llama a la función 'validaToken' y verifica si es válido
+if (validaToken($id, $token, $pdo)) {
+    echo "<h1>¡Cuenta activada correctamente!</h1>";
+    echo "<p>Ahora puedes iniciar sesión.</p>";
+    echo '<a href="login.php" style="text-decoration: none; color: #007bff; font-weight: bold;">Iniciar sesión</a>';
+} else {
+    echo "<h1>Error al activar la cuenta</h1>";
+    echo "<p>El token proporcionado no es válido o ya expiró.</p>";
+    echo '<a href="index.php" style="text-decoration: none; color: #007bff; font-weight: bold;">Volver al inicio</a>';
+}

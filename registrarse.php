@@ -1,14 +1,17 @@
 <?php
-require_once "conexion_pdo.php";
+// Incluir los archivos de configuración y las funciones necesarias
+require_once "config/conexion_pdo.php";
 require_once "config/config.php";
 require_once "clases/funciones_cliente.php";
+
+// Establecer la conexión con la base de datos usando PDO
 $dbConnection = new ConectaBD();
 $pdo = $dbConnection->getConBD();
 
 $errores = [];
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Recoger los datos del formulario
+    // Recoger los datos del formulario y limpiarlos
     $nombre = trim(htmlspecialchars($_POST['nombre']));
     $apellidos = trim(htmlspecialchars($_POST['apellidos']));
     $email = trim(htmlspecialchars($_POST['email']));
@@ -18,34 +21,49 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $password = trim(htmlspecialchars($_POST['password']));
     $rep_password = trim(htmlspecialchars($_POST['rep_password']));
 
-    // Verificar que los datos no son nulos o vacíos
+    // Verificar que los datos no sean nulos o vacíos
     if (esNulo([$nombre, $apellidos, $email, $telefono, $dni, $usuario, $password, $rep_password])) {
-        $errores[] = "Todos los campos son obligatorios y no pueden estar vacios.";
+        $errores[] = "Todos los campos son obligatorios y no pueden estar vacíos.";
     }
+
+    // Validar el formato del correo electrónico
     if (!esEmail($email)) {
-        $errores[] = "La direccion de correo no es valida.";
+        $errores[] = "La dirección de correo no es válida.";
     }
+
+    // Validar que las contraseñas coincidan
     if (!validaPassword($password, $rep_password)) {
         $errores[] = "Las contraseñas no coinciden.";
     }
+
+    // Validar el nombre de usuario (con la nueva función validarUsuario)
+    if (!validarUsuario($usuario)) {
+        $errores[] = "El nombre de usuario no es válido. Debe tener entre 3 y 10 caracteres alfanuméricos.";
+    }
+
+    // Verificar si el nombre de usuario ya existe en la base de datos
     if (usuarioExiste($usuario, $pdo)) {
         $errores[] = "El nombre de usuario $usuario ya existe.";
     }
-    if (emailExiste($email, $pdo)) {
-        $errores[] = "El correo electronico $email ya existe.";
-    }
-    /*  if (empty($nombre) || empty($apellidos) || empty($email) || empty($telefono) || empty($dni)) {
-        $errores[] = "Todos los campos son obligatorios y no pueden ser nulos.";
-    }
- */
-    // Depuración: Imprimir los valores capturados
-    /* echo "Nombre: $nombre<br>";
-    echo "Apellidos: $apellidos<br>";
-    echo "Email: $email<br>";
-    echo "Teléfono: $telefono<br>";
-    echo "DNI: $dni<br>"; */
 
+    // Verificar si el correo electrónico ya existe en la base de datos
+    if (emailExiste($email, $pdo)) {
+        $errores[] = "El correo electrónico $email ya existe.";
+    }
+
+    // Validar el número de teléfono
+    if (!validarTelefono($telefono)) {
+        $errores[] = "El número de teléfono no es válido. Debe tener 9 dígitos.";
+    }
+
+    // Validar el DNI
+    if (!validarDNI($dni)) {
+        $errores[] = "El DNI no es válido. Debe tener 8 dígitos seguidos de una letra.";
+    }
+
+    // Si no hay errores, proceder con el registro
     if (empty($errores)) {
+        // Registrar al cliente en la base de datos
         $id = registrarCliente([
             'nombre' => $nombre,
             'apellidos' => $apellidos,
@@ -55,33 +73,43 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         ], $pdo);
 
         if ($id > 0) {
-
+            // Si el cliente se registra correctamente, generar el token de activación
             require 'clases/Mailer.php';
             $mailer = new Mailer();
             $token = generaToken();
 
+            // Cifrar la contraseña del usuario antes de almacenarla
             $pass_hash = password_hash($password, PASSWORD_DEFAULT);
 
+            // Registrar al usuario en la base de datos
             $id_usuario = registrarUsuario([
                 'usuario' => $usuario,
                 'password' => $pass_hash,
                 'token' => $token,
                 'id_cliente' => $id
             ], $pdo);
+
+            // Si el usuario se registra correctamente
             if ($id_usuario > 0) {
+                // Generar el enlace para activar la cuenta
                 $url = SITE_URL . '/activa_cliente.php?id=' . $id_usuario . '&token=' . $token;
                 $asunto = "Activar cuenta - Tienda online";
-                $cuerpo = "Estimado $nombre: <br>Para continuar con el proceso de registro es indispensable de click
-                en la siguiente liga<a href='$url'> Activar cuenta.</a>";
+                $cuerpo = "Estimado $nombre: <br>Para continuar con el proceso de registro es indispensable que haga click
+                en el siguiente enlace <a href='$url'>Activar cuenta.</a>";
+
+                // Enviar el correo de activación al usuario
                 if ($mailer->enviarEmail($email, $asunto, $cuerpo)) {
-                    echo "Para terminar el proceso de registro siga las instrucciones que le hemos enviado
-                    a la direccion de correo electronico $email";
+                    // Mostrar un mensaje de éxito
+                    echo "Para terminar el proceso de registro, siga las instrucciones que le hemos enviado
+                    a la dirección de correo electrónico $email.";
                     exit;
                 }
             } else {
+                // Si no se pudo registrar el usuario, agregar el error
                 $errores[] = "Error al registrar usuario.";
             }
         } else {
+            // Si no se pudo registrar el cliente, agregar el error
             $errores[] = "Error al registrar cliente.";
         }
     }
@@ -96,128 +124,86 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Ariel_Caicedo">
-    <title>Tienda de juegos</title>
+    <title>Registro de cliente</title>
+    <link rel="icon" href="img/icono/favicon.ico" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/style_login.css">
+
 </head>
 
 <body>
-    <!-- Header Area Start -->
-
-    <!--Contenido-->
     <main>
-        <div class="container">
-            <h2>Datos de cliente</h2>
-            <?php mostrarMensajes($errores); ?>
-            <form class="row g-3 " method="POST" autocomplete="off" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>">
-                <div class="col-md-6">
-                    <label for="nombre" class="form-label">Nombre</label>
-                    <input type="text" class="form-control" name="nombre" id="nombre" class="form-control" placeholder="Ej. Juan" requireda>
+        <!-- Logotipo -->
+        <div class="logo-container mb-3 text-center text-md-start py-4">
+            <a href="index.php" class="navbar-brand">
+                <img src="img/logotipo/logotipo.png" alt="Replaygaming" id="site-logo">
+            </a>
+        </div>
+        <div class="container-fluid">
+            <div class="row min-vh-100">
+                <!-- Columna del formulario de Registro -->
+                <div class="col-lg-6 col-12 d-flex justify-content-center align-items-center text-light">
+                    <!-- Formulario de registro -->
+                    <div class="login-container p-4 rounded bg-dark w-100">
+                        <h2 class="text-center mb-4">Registrarse</h2>
+                        <?php mostrarMensajes($errores); ?>
+                        <form class="row g-3 form-login fs-6" method="post" autocomplete="off" action="<?= htmlspecialchars($_SERVER['PHP_SELF']) ?>">
+                            <div class="form-floating col-6 fs-6">
+                                <input type="text" class="form-control" name="nombre" id="nombre" placeholder="Ej. Juan" value="<?= isset($_POST['nombre']) ? $_POST['nombre'] : ''; ?>" require>
+                                <label for="nombre" class="form-label text-dark">Nombre</label>
+                            </div>
+                            <div class="form-floating col-6 fs-6">
+                                <input type="text" class="form-control" name="apellidos" id="apellidos" placeholder="Ej. López" value="<?= isset($_POST['apellidos']) ? $_POST['apellidos'] : ''; ?>" require>
+                                <label for="apellidos" class="form-label text-dark">Apellidos</label>
+                            </div>
+                            <div class="form-floating col-6 fs-6">
+                                <input type="email" class="form-control" name="email" id="email" placeholder="Ej. juanperez@example.com" value="<?= isset($_POST['email']) ? $_POST['email'] : ''; ?>" require>
+                                <label for="email" class="form-label text-dark">Tu email</label>
+                                <span id="validaEmail" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating col-6 fs-6">
+                                <input type="tel" class="form-control" name="telefono" id="telefono" placeholder="Ej. 1234567890" value="<?= isset($_POST['telefono']) ? $_POST['telefono'] : ''; ?>" require>
+                                <label for="telefono" class="form-label text-dark">Teléfono</label>
+                            </div>
+                            <div class="form-floating col-6 fs-6">
+                                <input type="text" class="form-control" name="dni" id="dni" placeholder="3-10 caracteres alfanuméricos" value="<?= isset($_POST['dni']) ? $_POST['dni'] : ''; ?>" require>
+                                <label for="dni" class="form-label text-dark">DNI</label>
+                            </div>
+                            <div class="form-floating col-6 fs-6">
+                                <input type="text" class="form-control" name="usuario" id="usuario" pattern="[a-zA-Z0-9]{3,10}" placeholder="3-10 caracteres alfanuméricos" value="<?= isset($_POST['usuario']) ? $_POST['usuario'] : ''; ?>" require>
+                                <label for="usuario" class="form-label text-dark">Usuario</label>
+                                <span id="validaUsuario" class="text-danger"></span>
+                            </div>
+                            <div class="form-floating col-6 fs-6">
+                                <input type="password" class="form-control" name="password" id="password" placeholder="Crea una contraseña" require>
+                                <label for="password" class="form-label text-dark">Contraseña</label>
+                            </div>
+                            <div class="form-floating col-6 fs-6">
+                                <input type="password" class="form-control" name="rep_password" id="rep_password" placeholder="Repite la contraseña" require>
+                                <label for="rep_password" class="form-label text-dark">Repetir Contraseña</label>
+                            </div>
+                            <i><b>Nota:</b> Todos los campos son obligatorios</i>
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-warning w-100">Registrarse</button>
+                            </div>
+                            <div class="col-12 mt-3 text-center">
+                                <a href="login.php" class="btn btn-outline-danger w-100">Volver atras</a>
+                            </div>
+                        </form>
+                    </div>
+
                 </div>
-                <div class="col-md-6">
-                    <label for="apellidos" class="form-label">Apellidos</label>
-                    <input type="text" class="form-control" name="apellidos" id="apellidos" class="form-control" placeholder="Ej. López" requireda>
+
+                <!-- Imagen de fondo a la derecha en pantallas grandes -->
+                <div class="col-lg-6 d-none d-lg-block p-0">
+                    <img src="img/fondo_login/login.png" alt="Imagen de registro" class="login-image">
                 </div>
-                <div class="col-md-6">
-                    <label for="email" class="form-label">Correo Electrónico</label>
-                    <input type="email" class="form-control" name="email" id="email" class="form-control" placeholder="Ej. juanperez@example.com" requireda>
-                    <span id="validaEmail" class="text-danger"></span>
-                </div>
-                <div class="col-md-6">
-                    <label for="telefono" class="form-label">Teléfono</label>
-                    <input type="tel" class="form-control" name="telefono" id="telefono" class="form-control" placeholder="Ej. 1234567890">
-                </div>
-                <div class="col-md-6">
-                    <label for="dni" class="form-label">DNI</label>
-                    <input type="text" class="form-control" name="dni" id="dni" class="form-control" placeholder="3-10 caracteres alfanuméricos" requireda>
-                </div>
-                <div class="col-md-6">
-                    <label for="usuario" class="form-label">Usuario</label>
-                    <input type="text" class="form-control" name="usuario" id="usuario" class="form-control" pattern="[a-zA-Z0-9]{3,10}" placeholder="3-10 caracteres alfanuméricos" requireda>
-                    <span id="validaUsuario" class="text-danger"></span>
-                </div>
-                <div class="col-md-6">
-                    <label for="password" class="form-label">Contraseña</label>
-                    <input type="password" class="form-control" name="password" id="password" class="form-control" placeholder="Crea una contraseña" requireda>
-                </div>
-                <div class="col-md-6">
-                    <label for="rep_password" class="form-label">Repetir Contraseña</label>
-                    <input type="password" class="form-control" name="rep_password" id="rep_password" class="form-control" placeholder="Repite la contraseña" requireda>
-                </div>
-                <i><b>Nota:</b>Todos los campos son obligatorios</i>
-                <div class="col-12">
-                    <button type="submit" class="btn btn-primary">Registrarse</button>
-                </div>
-            </form>
+            </div>
         </div>
     </main>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-    <script>
-        let txtUsuario = document.getElementById('usuario');
-        txtUsuario.addEventListener('blur', function() {
-            existeUsuario(txtUsuario.value);
-        }, false);
-
-        let txtEmail = document.getElementById('email');
-        txtEmail.addEventListener('blur', function() { // Cambiado de txtUsuario a txtEmail
-            existeEmail(txtEmail.value);
-        }, false);
-
-        function existeUsuario(usuario) {
-            let url = "clases/cliente_ajax.php";
-            let formData = new FormData();
-            formData.append("action", "existeUsuario");
-            formData.append("usuario", usuario);
-
-            console.log("Enviando solicitud para verificar usuario:", usuario);
-
-            fetch(url, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Respuesta recibida:", data);
-                    if (data.ok) {
-                        document.getElementById('usuario').value = '';
-                        document.getElementById('validaUsuario').innerHTML = 'Usuario no disponible';
-                    } else {
-                        document.getElementById('validaUsuario').innerHTML = '';
-                    }
-                })
-                .catch(error => {
-                    console.error("Error al verificar usuario:", error);
-                });
-        }
-
-        function existeEmail(email) {
-            let url = "clases/cliente_ajax.php";
-            let formData = new FormData();
-            formData.append("action", "existeEmail");
-            formData.append("email", email);
-
-            console.log("Enviando solicitud para verificar email:", email);
-
-            fetch(url, {
-                    method: 'POST',
-                    body: formData
-                })
-                .then(response => response.json())
-                .then(data => {
-                    console.log("Respuesta recibida:", data);
-                    if (data.ok) {
-                        document.getElementById('email').value = '';
-                        document.getElementById('validaEmail').innerHTML = 'Email no disponible';
-                    } else {
-                        document.getElementById('validaEmail').innerHTML = '';
-                    }
-                })
-                .catch(error => {
-                    console.error("Error al verificar email:", error);
-                });
-        }
+    <script src="js/validacion_registro.js">
     </script>
 </body>
 

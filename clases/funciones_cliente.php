@@ -224,3 +224,41 @@ function actualizaPassword($id_user, $password, $pdo)
     }
     return false;
 }
+// Función para validar el teléfono (9 dígitos, solo números)
+function validarTelefono($telefono) {
+    // Expresión regular para validar un teléfono de España (9 dígitos)
+    $regex = '/^[0-9]{9}$/';
+
+    // Verificar si el teléfono cumple con el patrón
+    if (preg_match($regex, $telefono)) {
+        return true;  // El teléfono es válido
+    } else {
+        return false;  // El teléfono no es válido
+    }
+}
+// Función para validar el DNI español (8 números + 1 letra)
+function validarDNI($dni) {
+    // Expresión regular para validar un DNI de España (8 números + 1 letra)
+    $regex = '/^\d{8}[A-Za-z]$/';
+
+    // Verificar si el DNI cumple con el patrón
+    if (preg_match($regex, $dni)) {
+        return true;  // El DNI es válido
+    } else {
+        return false;  // El DNI no es válido
+    }
+}
+// Función para validar el nombre de usuario
+function validarUsuario($usuario)
+{
+    // Verificar si el nombre de usuario solo tiene entre 3 y 10 caracteres alfanuméricos
+    if (preg_match('/^[a-zA-Z0-9]{3,10}$/', $usuario)) {
+        return true;  // Usuario válido
+    } else {
+        return false;  // Usuario no válido
+    }
+}
+
+
+
+

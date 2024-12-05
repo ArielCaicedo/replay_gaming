@@ -1,5 +1,5 @@
 <?php
-require_once "../conexion_pdo.php";
+require_once "../config/conexion_pdo.php";
 require_once "../config/config.php";
 
 $dbConnection = new ConectaBD();

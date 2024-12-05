@@ -1,5 +1,5 @@
 <?php
-require_once "conexion_pdo.php";
+require_once "config/conexion_pdo.php";
 require_once "config/config.php";
 $dbConnection = new ConectaBD();
 $pdo = $dbConnection->getConBD();
@@ -37,23 +37,9 @@ if ($id == '' || $token == '') {
             $descuento = $resultado['descuento'];
             $precio_desc = $precio - (($precio * $descuento) / 100);
             $imagen_principal = "img/" . htmlspecialchars($resultado['imagen'], ENT_QUOTES, 'UTF-8');
-             // Verificar si la imagen principal existe, de lo contrario asignar una imagen predeterminada.
+            // Verificar si la imagen principal existe, de lo contrario asignar una imagen predeterminada.
             if (!file_exists($imagen_principal)) {
-                $imagen_principal = "img/single-game.jpg";
-            }
-            $imgs = array();
-            $dir = 'img/';
-            // Verificar si el directorio 'img' existe y es un directorio válido.
-            if (is_dir($dir)) {
-                if ($dh = opendir($dir)) {// Abrir el directorio para leer su contenido.
-                    while (($archivo = readdir($dh)) !== false) {
-                        // Verificar que el archivo sea una imagen (jpg o png) y que no sea la imagen principal.
-                        if (is_file($dir . $archivo) && $archivo != $resultado['imagen'] && (strpos($archivo, '.jpg') !== false || strpos($archivo, '.png') !== false)) {
-                            $imgs[] = $dir . $archivo;
-                        }
-                    }
-                    closedir($dh);
-                }
+                $imagen_principal = "img/single-game.jpeg";
             }
         } else {
             echo "Producto no encontrado";
@@ -64,6 +50,15 @@ if ($id == '' || $token == '') {
         exit;
     }
 }
+// Consulta de productos para juegos en tendencia.
+$query = "SELECT id_producto, nombre, descripcion, precio, imagen, popularidad
+            FROM productos
+            WHERE popularidad = 'tendencia'
+            ORDER BY id_producto DESC
+            LIMIT 4";
+$stmt = $pdo->prepare($query);
+$stmt->execute();
+$resultadosTendencia = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 <!DOCTYPE html>
 <html lang="es">
@@ -73,110 +68,140 @@ if ($id == '' || $token == '') {
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <meta name="author" content="Ariel_Caicedo">
-    <title>Tienda de juegos</title>
+    <title>Detalle del producto</title>
+    <link rel="icon" href="img/icono/favicon.ico" type="image/x-icon">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
     <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
-
-    <!-- Header Area Start -->
+    <!-- Header -->
     <?php include 'menu.php'; ?>
-
-    <main>
+    <!-- Contenido -->
+    <main class="py-5 bg-dark">
         <div class="container">
-            <div class="row">
-                <div class="col-md-6 order-md-1">
-                    <div id="carouselImages" class="carousel slide" data-bs-ride="carousel">
-                        <div class="carousel-inner">
-                            <div class="carousel-item active">
-                                <img src="<?php echo $imagen_principal; ?>" alt="<?php echo $nombre; ?>" class="d-block w-100">
-                            </div>
-                            <?php foreach ($imgs as $img): ?>
-                                <div class="carousel-item">
-                                    <img src="<?php echo $img; ?>" alt="<?php echo $nombre; ?>" class="d-block w-100">
-                                </div>
-                            <?php endforeach; ?>
-                        </div>
-                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselImages" data-bs-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Previous</span>
-                        </button>
-                        <button class="carousel-control-next" type="button" data-bs-target="#carouselImages" data-bs-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="visually-hidden">Next</span>
-                        </button>
+            <div class="row align-items-center">
+                <!-- Columna de la imagen del producto -->
+                <div class="col-lg-6">
+                    <div class="product-image">
+                        <img src="<?php echo $imagen_principal; ?>" alt="<?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?>" class="img-fluid rounded shadow">
                     </div>
                 </div>
-                <div class="col-md-6 order-md-2">
-                    <h2><?php echo $nombre; ?></h2>
 
+                <!-- Columna de la información del producto -->
+                <div class="col-lg-6">
+                    <h2 class="fw-bold mb-3"><?php echo htmlspecialchars($nombre, ENT_QUOTES, 'UTF-8'); ?></h2>
                     <?php if ($descuento > 0) { ?>
-                        <p><del><?php echo MONEDA . ' ' . number_format($precio, 2, ',', '.'); ?></del></p>
-                        <h2>
+                        <p class="text-light"><del><?php echo MONEDA . ' ' . number_format($precio, 2, ',', '.'); ?></del></p>
+                        <h3 class="text-danger">
                             <?php echo MONEDA . ' ' . number_format($precio_desc, 2, ',', '.'); ?>
-                            <small class="text-success"> <?php echo $descuento; ?>% descuento</small>
-                        </h2>
+                            <small class="text-success"> (<?php echo $descuento; ?>% descuento)</small>
+                        </h3>
                     <?php } else { ?>
-
-                        <h2><?php echo MONEDA . ' ' . number_format($precio, 2, ',', '.'); ?></h2>
+                        <h3 class="text-primary"><?php echo MONEDA . ' ' . number_format($precio, 2, ',', '.'); ?></h3>
                     <?php } ?>
-                    <p class="lead">
-                        <?php echo $descripcion; ?>
-                    </p>
-                    <div class="d-grid gap-3 col-10 mx-auto">
-                        <button class="btn btn-primary" type="button">Comprar ahora</button>
-                        <button class="btn btn-outline-primary" type="button" onclick="addProducto(<?php echo $id; ?>, '<?php echo $token_tmp; ?>')">Agregar al carrito</button>
+
+                    <p class="descripcion-producto"><?php echo nl2br(htmlspecialchars($descripcion, ENT_QUOTES, 'UTF-8')); ?></p>
+
+                    <div class="d-grid gap-3 mt-4">
+                        <button class="btn btn-outline-primary btn-lg" id="btnAgregar" type="button">
+                            <i class="fa fa-shopping-cart"></i> Agregar al carrito
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
-
-    <!-- footer -->
-    <footer class="bg-dark text-light py-5 mt-auto">
-        <div class="container">
-            <div class="row">
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-uppercase">Gaming Shop</h5>
-                    <p>Tu destino número uno para juegos increíbles. Encuentra juegos de segunda mano en perfecto estado.</p>
+    <div class="py-5">
+    <div class="container">
+        <!-- Encabezado -->
+        <div class="row">
+            <div class="col-lg-6">
+                <div class="section-heading">
+                    <h6 class="text-warning">Popular</h6>
+                    <h2>Juegos en Tendencia</h2>
                 </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-uppercase">Enlaces Rápidos</h5>
-                    <ul class="list-unstyled">
-                        <li><a href="index.html" class="text-white text-decoration-none">Inicio</a></li>
-                        <li><a href="shop.html" class="text-white text-decoration-none">Nuestra Tienda</a></li>
-                        <li><a href="contact.html" class="text-white text-decoration-none">Contáctanos</a></li>
-                        <li><a href="about.html" class="text-white text-decoration-none">Acerca de</a></li>
-                    </ul>
-                </div>
-                <div class="col-lg-4 col-md-6 mb-4">
-                    <h5 class="text-uppercase">Síguenos</h5>
-                    <div class="social">
-                        <a href="#" class="text-white me-3"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="text-white"><i class="fab fa-linkedin-in"></i></a>
-                    </div>
-                </div>
-            </div>
-            <hr class="bg-secondary">
-            <div class="text-center">
-                <p class="mb-0">&copy; 2024 Realizado por Ariel Caicedo.</p>
             </div>
         </div>
-    </footer>
+
+        <!-- Fila de productos -->
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 mt-4 g-4" data-aos="fade-down" data-aos-easing="linear" data-aos-duration="2000">
+            <?php foreach ($resultadosTendencia as $producto): ?>
+                <div class="col d-flex align-items-stretch">
+                    <div class="card shadow-lg border-0 bg-dark text-white d-flex flex-column">
+                        <!-- Imagen y precio -->
+                        <div class="thumb position-relative">
+                            <a href="detalles.php?id=<?php echo $producto['id_producto']; ?>&token=<?php echo hash_hmac('sha1', $producto['id_producto'], KEY_TOKEN); ?>">
+                                <?php
+                                $imagen = "img/" . htmlspecialchars($producto['imagen'], ENT_QUOTES, 'UTF-8');
+                                if (!file_exists($imagen)) {
+                                    $imagen = "img/single-game.jpeg"; // Imagen por defecto si no existe
+                                }
+                                ?>
+                                <img src="<?php echo htmlspecialchars($imagen, ENT_QUOTES, 'UTF-8'); ?>" class="card-img-top rounded" alt="<?php echo htmlspecialchars($producto['nombre'], ENT_QUOTES, 'UTF-8'); ?>" loading="lazy">
+                            </a>
+                            <!-- Precio -->
+                            <span class="price position-absolute bottom-0 start-0 p-2 text-white bg-dark bg-opacity-75 rounded">
+                                <?php echo MONEDA . ' ' . number_format($producto['precio'], 2, ',', '.'); ?>
+                            </span>
+                        </div>
+                        <!-- Contenido -->
+                        <div class="card-body text-center d-flex flex-column justify-content-between">
+                            <h5 class="card-title"><?php echo htmlspecialchars($producto['nombre'], ENT_QUOTES, 'UTF-8'); ?></h5>
+                        </div>
+                        <!-- Botón de detalles -->
+                        <div class="d-flex justify-content-center mt-auto mb-3">
+                            <a href="detalles.php?id=<?php echo $producto['id_producto']; ?>&token=<?php echo hash_hmac('sha1', $producto['id_producto'], KEY_TOKEN); ?>" class="btn btn-outline-warning btn-sm me-2">Detalles</a>
+                        </div>
+                    </div>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</div>
 
 
+    <!-- footer -->
+    <?php include 'footer.php'; ?>
 
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.min.js" integrity="sha384-0pUGZvbkm6XF6gxjEnlmuGrJXVbNuzT9qBBavbLwCsOGabYfZo0T0to5eqruptLy" crossorigin="anonymous"></script>
-    <script>
-        function addProducto(id, token) {
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
-            let url = 'clases/carrito.php'
-            let formData = new FormData()
-            formData.append('id', id)
-            formData.append('token', token)
+    <script>
+        // JavaScript para cambiar el fondo del navbar cuando se hace scroll
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar-custom');
+            if (window.scrollY > 50) {
+                navbar.classList.add('scrolled'); // Aplica la clase cuando se hace scroll
+            } else {
+                navbar.classList.remove('scrolled'); // Elimina la clase cuando se vuelve a la parte superior
+            }
+        });
+        let btnAgregar = document.getElementById("btnAgregar");
+        btnAgregar.onclick = function() {
+            addProducto(<?php echo $id; ?>, '<?php echo $token_tmp; ?>');
+            triggerConfetti();
+        };
+
+        function triggerConfetti() {
+            confetti({
+                particleCount: 100, // Número de partículas
+                startVelocity: 30, // Velocidad inicial
+                spread: 360, // Ángulo de dispersión
+                origin: {
+                    x: 0.9, // Coordenadas relativas del origen (90% a la derecha)
+                    y: 0.1 // Coordenadas relativas del origen (10% desde arriba)
+                }
+            });
+        }
+
+        function addProducto(id, token) {
+            let url = 'clases/carrito.php';
+            let formData = new FormData();
+            formData.append('id', id);
+            formData.append('token', token);
 
             fetch(url, {
                     method: 'POST',
@@ -185,10 +210,24 @@ if ($id == '' || $token == '') {
                 }).then(response => response.json())
                 .then(data => {
                     if (data.ok) {
-                        let elemento = document.getElementById("num_cart")
-                        elemento.innerHTML = data.numero
+                        // Actualizar el número del carrito
+                        let numCart = document.getElementById("num_cart");
+                        numCart.innerHTML = data.numero;
+
+                        // Selecciona el ícono del carrito
+                        let carrito = document.querySelector(".cart");
+
+                        // Agregar la clase para animación
+                        carrito.classList.add('vibrar');
+
+                        // Eliminar la clase después de la animación
+                        setTimeout(() => {
+                            carrito.classList.remove('vibrar');
+                        }, 800); // Duración total de la animación en milisegundos
+
                     }
                 })
+                .catch(error => console.error('Error:', error));
         }
     </script>
 </body>
